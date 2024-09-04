@@ -28,6 +28,7 @@ public class UserController {
         return new UserInfoResponse();
     }
 
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
 
