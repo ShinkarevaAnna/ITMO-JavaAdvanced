@@ -6,6 +6,7 @@ public enum CarMake {
     MERCEDES,
     PORSCHE,
     TOYOTA,
-    LANCIA
+    LANCIA,
+    GEELY
 
 }

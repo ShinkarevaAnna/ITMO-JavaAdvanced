@@ -27,14 +27,10 @@ public class UserController {
     public UserInfoResponse updateUser(@PathVariable Long id, @RequestBody UserInfoRequest request) {
         return new UserInfoResponse();
     }
-
-
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
 
     }
-
-
     @GetMapping("/all")
     public List<UserInfoResponse> getAllUsers() {
         return Collections.singletonList(new UserInfoResponse());
