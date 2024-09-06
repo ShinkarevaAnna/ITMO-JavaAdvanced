@@ -28,6 +28,7 @@ public class CarController {
         return new CarInfoResponse();
     }
 
+
     @DeleteMapping("/{id}")
     public void deleteCar(@PathVariable Long id) {
 

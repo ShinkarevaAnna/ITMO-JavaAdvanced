@@ -1,15 +1,14 @@
 package com.example.car.model.dto.request;
 
 
-import com.example.car.model.enums.CarMake;
 import com.example.car.model.enums.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@Setter
 @AllArgsConstructor
+@Setter
 @NoArgsConstructor
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
