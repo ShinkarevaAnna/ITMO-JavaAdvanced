@@ -5,6 +5,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Getter
 @AllArgsConstructor
 @Setter
@@ -12,12 +15,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CarInfoRequest {
-    @NonNull
+    @NotEmpty
     String email;
-    @NonNull
     String password;
     String color;
     String model;
-    @NonNull
+    @NotNull
     CarMake carMake;
 }

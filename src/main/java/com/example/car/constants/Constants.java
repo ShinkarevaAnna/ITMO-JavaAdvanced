@@ -2,7 +2,7 @@ package com.example.car.constants;
 
 public interface Constants {
     String API = "/api";
-    String CAR_API = "/api/car";
-    String USER_API = "/api/user";
+    String CARS_API = API + "/cars";
+    String USERS_API = API + "/users";
 
 }

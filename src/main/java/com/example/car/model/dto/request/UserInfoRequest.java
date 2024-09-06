@@ -6,6 +6,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Getter
 @AllArgsConstructor
 @Setter
@@ -13,14 +16,14 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserInfoRequest {
-    @NonNull
+    @NotEmpty
     String email;
-    @NonNull
     String password;
     String firstName;
     String lastName;
     String middleName;
+
+    @NotNull
     Integer age;
-    @NonNull
     Gender gender;
 }
