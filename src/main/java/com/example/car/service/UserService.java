@@ -1,62 +1,80 @@
 package com.example.car.service;
 
+import com.example.car.model.db.entity.User;
+import com.example.car.model.db.repository.UserRepository;
 import com.example.car.model.dto.request.UserInfoRequest;
 import com.example.car.model.dto.response.UserInfoResponse;
+import com.example.car.model.enums.UserStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final ObjectMapper mapper;
+    private final UserRepository userRepository;
 
     public UserInfoResponse createUser(UserInfoRequest request) {
         if (!EmailValidator.getInstance().isValid(request.getEmail())) {
             return null;
         }
-
-        return UserInfoResponse.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .age(request.getAge())
-                .gender(request.getGender())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .middleName(request.getMiddleName())
-                .id(1L)
-                .build();
+        User user = mapper.convertValue(request, User.class);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setStatus(UserStatus.CREATED);
+        User save = userRepository.save(user);
+        return mapper.convertValue(save, UserInfoResponse.class);
     }
 
     public UserInfoResponse getUser(Long id) {
-        return null;
+        User user = getUserFromDB(id);
+        return mapper.convertValue(user, UserInfoResponse.class);
+    }
+
+    private User getUserFromDB(long id) {
+        return userRepository.findById(id).orElse(new User());
     }
 
     public UserInfoResponse updateUser(Long id, UserInfoRequest request) {
         if (!EmailValidator.getInstance().isValid(request.getEmail())) {
             return null;
         }
+        User user = getUserFromDB(id);
 
-        return UserInfoResponse.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .age(request.getAge())
-                .gender(request.getGender())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .middleName(request.getMiddleName())
-                .build();
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword() == null ? user.getPassword(): request.getPassword());
+        user.setAge((request.getAge() == null) ? user.getAge() : request.getAge());
+        user.setGender(request.getGender() == null ? user.getGender() : request.getGender());
+        user.setFirstName(request.getFirstName() == null ? user.getFirstName() : request.getFirstName());
+        user.setLastName(request.getLastName() == null ? user.getLastName() : request.getLastName());
+        user.setMiddleName(request.getMiddleName() == null ? user.getLastName() : request.getLastName());
+
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setStatus(UserStatus.UPDATED);
+
+        User save = userRepository.save(user);
+
+        return mapper.convertValue(save, UserInfoResponse.class);
     }
 
     public void deleteUser(Long id) {
+        User user = getUserFromDB(id);
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
 
     }
 
     public List<UserInfoResponse> getAllUsers() {
-        return Collections.emptyList();
+        return userRepository.findAll().stream()
+                .map(user -> mapper.convertValue(user, UserInfoResponse.class))
+                .collect(Collectors.toList());
     }
 }

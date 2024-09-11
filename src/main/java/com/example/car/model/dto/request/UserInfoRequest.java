@@ -22,8 +22,6 @@ public class UserInfoRequest {
     String firstName;
     String lastName;
     String middleName;
-
-    @NotNull
     Integer age;
     Gender gender;
 }
