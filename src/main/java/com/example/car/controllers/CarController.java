@@ -1,6 +1,7 @@
 package com.example.car.controllers;
 
 import com.example.car.model.dto.request.CarInfoRequest;
+import com.example.car.model.dto.request.CarToUserRequest;
 import com.example.car.model.dto.response.CarInfoResponse;
 import com.example.car.service.CarService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,7 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.example.car.constants.Constants.CARS_API;
@@ -53,8 +58,21 @@ public class CarController {
 
     })
     @Operation(summary = "Get all cars")
-    public List<CarInfoResponse> getAllCars() {
-        return carService.getAllCars();
+    public Page<CarInfoResponse> getAllCars(@RequestParam(defaultValue = "1") Integer page,
+                                            @RequestParam(defaultValue = "10") Integer perPage,
+                                            @RequestParam(defaultValue = "brand") String sort,
+                                            @RequestParam(defaultValue = "ASC") Sort.Direction order,
+                                            @RequestParam(required = false) String filter
+
+    ) {
+        return carService.getAllCars(page, perPage, sort, order, filter);
     }
+
+    @PostMapping("/carToUser")
+    @Operation(summary = "Add car to user")
+    public void addCarToUser(@RequestBody @Valid CarToUserRequest request) {
+        carService.addCarToUser(request);
+    }
+
 
 }

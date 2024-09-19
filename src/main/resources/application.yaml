@@ -3,7 +3,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/cars
     username: postgres
-    password: postgres
+    password: PSzmr03
     driver-class-name: org.postgresql.Driver
 
   jpa:
