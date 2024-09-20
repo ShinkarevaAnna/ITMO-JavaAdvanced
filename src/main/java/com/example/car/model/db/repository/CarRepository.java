@@ -16,9 +16,9 @@ import java.util.Optional;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car, Long> {
-    Optional<Car> findByBrandAndStatus(CarMake carMake, CarStatus status);
+    Optional<Car> findByCarMakeAndStatus(CarMake carMake, CarStatus status);
 
-    Car findByBrandAndStatusAndColor(CarMake carMake, CarStatus status, Color color);
+    Car findByCarMakeAndStatusAndColor(CarMake carMake, CarStatus status, Color color);
 
     List<Car> findAllByModel(String model);
 
@@ -41,7 +41,9 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     @Query("select c from Car c where c.status <> :status and (lower(c.carMake) like %:filter%  or  lower(c.model) like %:filter% )")
     Page<Car> findAllByStatusNotFiltered(Pageable request, CarStatus status, @Param("filter") String filter);
 
-    @Query("select с from Car с where c.status <> :status and с.user == :user and (lower(c.carMake) like %:filter%  or  lower(c.model) like %:filter% )" )
-    List<Car> getCarByUser(Pageable request, CarStatus status, @Param("userId") Long userId, @Param("filter") String filter);
+    @Query("select c from Car c where c.user.id = :id and c.status <> :status")
+    Page<Car> findAllCarsByStatusNot(Long id, Pageable request, CarStatus status);
 
+    @Query("select c from Car c where c.user.id = :id and c.status <> :status and (lower(c.carMake) like %:filter%  or  lower(c.model) like %:filter% )")
+    Page<Car> findAllCarsByStatusNotFiltered(Long id, Pageable request, CarStatus status, @Param("filter") String filter);
 }

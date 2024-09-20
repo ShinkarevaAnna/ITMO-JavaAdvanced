@@ -12,12 +12,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +39,7 @@ public class CarService {
         return mapper.convertValue(getCarById(id), CarInfoResponse.class);
     }
 
-    private Car getCarById(long id) {
-
+    private Car getCarById(Long id) {
         return carRepository.findById(id)
                 .orElse(new Car());
     }
@@ -119,30 +117,30 @@ public Page<CarInfoResponse> getAllCars(Integer page, Integer perPage, String so
         return carRepository.getSomeCar(true);
     }
 
-    public getCarFromUser(CarToUserRequest request){
-              list, get user
-        Car car = carRepository.findById(request.getCarId()).orElse(null);
-        findAllNotDeletedCars()
-        List<CarInfoResponse> content = all.getContent().stream()
-                .map(car -> mapper.convertValue(car, CarInfoResponse.class))
-                .collect(Collectors.toList());
-    }
-    public Page<CarInfoResponse> getAllCarsFromUser( Long id, Integer page, Integer perPage, String sort, Sort.Direction order, String filter) {
+//    public List<CarInfoResponse> getUserCars(Long id){
+//        User user = userService.getUserFromDB(id);
+//        if(user == null){
+//            return  null;
+//        }
+//        return user.getCars().stream()
+//                .map(car -> mapper.convertValue(car,CarInfoResponse.class))
+//                .collect(Collectors.toList());
+//    }
 
-
+    public Page<CarInfoResponse> getUserCars(Long id, Integer page, Integer perPage, String sort, Sort.Direction order, String filter) {
         Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
-
-        Page<Car> all;
-
+        Page<Car> userCars;
         if (filter == null) {
-            all = carRepository.findAllByStatusNot(pageRequest, CarStatus.DELETED);
+            userCars = carRepository.findAllCarsByStatusNot(id, pageRequest, CarStatus.DELETED);
         } else {
-            all = carRepository.getCarByUser(pageRequest, CarStatus.DELETED, id, filter.toLowerCase());
+            userCars = carRepository.findAllCarsByStatusNotFiltered(id, pageRequest, CarStatus.DELETED, filter.toLowerCase());
         }
 
-        List<CarInfoResponse> content = all.getContent().stream()
+        List<CarInfoResponse> content = userCars.getContent().stream()
                 .map(car -> mapper.convertValue(car, CarInfoResponse.class))
                 .collect(Collectors.toList());
-        return new PageImpl<>(content, pageRequest, all.getTotalElements());
+
+        return new PageImpl<>(content, pageRequest, userCars.getTotalElements());
     }
+
 }

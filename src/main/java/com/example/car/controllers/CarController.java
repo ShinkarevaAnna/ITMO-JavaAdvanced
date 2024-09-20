@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static com.example.car.constants.Constants.CARS_API;
 
@@ -60,7 +59,7 @@ public class CarController {
     @Operation(summary = "Get all cars")
     public Page<CarInfoResponse> getAllCars(@RequestParam(defaultValue = "1") Integer page,
                                             @RequestParam(defaultValue = "10") Integer perPage,
-                                            @RequestParam(defaultValue = "brand") String sort,
+                                            @RequestParam(defaultValue = "carMake") String sort,
                                             @RequestParam(defaultValue = "ASC") Sort.Direction order,
                                             @RequestParam(required = false) String filter
 
@@ -74,5 +73,17 @@ public class CarController {
         carService.addCarToUser(request);
     }
 
+    @GetMapping("/userCars/{id}")
+    @Operation(summary = "get user cars")
+    public Page<CarInfoResponse> getUserCars(@PathVariable Long id,
+                                                        @RequestParam(defaultValue = "1") Integer page,
+                                                        @RequestParam(defaultValue = "10") Integer perPage,
+                                                        @RequestParam(defaultValue = "carMake") String sort,
+                                                        @RequestParam(defaultValue = "ASC") Sort.Direction order,
+                                                        @RequestParam(required = false) String filter
+
+    ) {
+        return carService.getUserCars(id, page, perPage, sort, order, filter);
+    }
 
 }

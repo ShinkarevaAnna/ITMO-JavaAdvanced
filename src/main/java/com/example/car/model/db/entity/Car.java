@@ -3,6 +3,7 @@ package com.example.car.model.db.entity;
 import com.example.car.model.enums.CarMake;
 import com.example.car.model.enums.CarStatus;
 import com.example.car.model.enums.Color;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +26,11 @@ public class Car {
     Long id;
 
     @Column(name = "created_at")
-            @CreationTimestamp
+    @CreationTimestamp
     LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-            @UpdateTimestamp
+    @UpdateTimestamp
     LocalDateTime updatedAt;
 
     @Column(name = "status")
@@ -37,6 +38,7 @@ public class Car {
     CarStatus status;
 
     @Column(name = "brand")
+    @Enumerated(EnumType.STRING)
     CarMake carMake;
 
     @Column(name = "model")
@@ -56,5 +58,6 @@ public class Car {
     Boolean isNew;
 
     @ManyToOne
+    @JsonBackReference(value = "driver_cars")
     User user;
 }
