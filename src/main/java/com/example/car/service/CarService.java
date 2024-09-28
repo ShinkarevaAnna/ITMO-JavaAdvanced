@@ -1,5 +1,6 @@
 package com.example.car.service;
 
+import com.example.car.exceptions.CustomException;
 import com.example.car.model.db.entity.Car;
 import com.example.car.model.db.entity.User;
 import com.example.car.model.db.repository.CarRepository;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,25 +44,24 @@ public class CarService {
 
     private Car getCarById(Long id) {
         return carRepository.findById(id)
-                .orElse(new Car());
+                .orElseThrow(() -> new CustomException("Car not found", HttpStatus.NOT_FOUND));
     }
 
     public CarInfoResponse updateCar(Long id, CarInfoRequest request) {
-//        Car car = getCarFromDB(id);
-//
-//        car.setColor((request.getColor() == null) ? car.getColor() : request.getColor());
-//        car.setModel(request.getModel() == null ? car.getModel() : request.getModel());
-//        car.setCarMake(request.getCarMake() == null ? car.getCarMake() : request.getCarMake());
-//        car.setYear(request.getYear() == null ? car.getYear() : request.getYear());
-//        car.setPrice(request.getPrice() == null ? car.getPrice() : request.getPrice());
-//        car.setIsNew(request.getIsNew() == null ? car.getIsNew() : request.getIsNew());
-//        car.setUpdatedAt(LocalDateTime.now());
-//        car.setStatus(CarStatus.UPDATED);
-//
-//        Car save = carRepository.save(car);
-//
-//        return mapper.convertValue(save, CarInfoResponse.class);
-return null;
+        Car car = getCarById(id);
+
+        car.setColor((request.getColor() == null) ? car.getColor() : request.getColor());
+        car.setModel(request.getModel() == null ? car.getModel() : request.getModel());
+        car.setCarMake(request.getCarMake() == null ? car.getCarMake() : request.getCarMake());
+        car.setYear(request.getYear() == null ? car.getYear() : request.getYear());
+        car.setPrice(request.getPrice() == null ? car.getPrice() : request.getPrice());
+        car.setIsNew(request.getIsNew() == null ? car.getIsNew() : request.getIsNew());
+        car.setUpdatedAt(LocalDateTime.now());
+        car.setStatus(CarStatus.UPDATED);
+
+        Car save = carRepository.save(car);
+
+        return mapper.convertValue(save, CarInfoResponse.class);
     }
 
     public void deleteCar(Long id) {
@@ -82,7 +84,7 @@ public Page<CarInfoResponse> getAllCars(Integer page, Integer perPage, String so
     if (filter == null) {
         all = carRepository.findAllByStatusNot(pageRequest, CarStatus.DELETED);
     } else {
-        all = carRepository.findAllByStatusNotFiltered(pageRequest, CarStatus.DELETED, filter.toLowerCase());
+        all = carRepository.findAllByStatusNotFiltered(pageRequest, CarStatus.DELETED, filter.toUpperCase());
     }
 
     List<CarInfoResponse> content = all.getContent().stream()
@@ -93,22 +95,28 @@ public Page<CarInfoResponse> getAllCars(Integer page, Integer perPage, String so
 }
 
     public void addCarToUser(CarToUserRequest request) {
-        Car car = carRepository.findById(request.getCarId()).orElse(null);
-
-        if (car == null) {
-            return;
-        }
-
+//        Car car = carRepository.findById(request.getCarId()).orElse(null);
+//
+//        if (car == null) {
+//            return;
+//        }
+//
+//        User userFromDB = userService.getUserFromDB(request.getUserId());
+//
+//        if (userFromDB == null) {
+//            return;
+//        }
+//
+//        userFromDB.getCars().add(car);
+//
+//        userService.updateUserData(userFromDB);
+//
+//        car.setUser(userFromDB);
+//        carRepository.save(car);
+        Car car = getCarById(request.getCarId());
         User userFromDB = userService.getUserFromDB(request.getUserId());
-
-        if (userFromDB == null) {
-            return;
-        }
-
         userFromDB.getCars().add(car);
-
         userService.updateUserData(userFromDB);
-
         car.setUser(userFromDB);
         carRepository.save(car);
     }

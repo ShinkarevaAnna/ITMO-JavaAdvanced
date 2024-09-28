@@ -1,5 +1,6 @@
 package com.example.car.service;
 
+import com.example.car.exceptions.CustomException;
 import com.example.car.model.db.entity.User;
 import com.example.car.model.db.repository.UserRepository;
 import com.example.car.model.dto.request.UserInfoRequest;
@@ -14,10 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,14 +32,25 @@ public class UserService {
 
 
     public UserInfoResponse createUser(UserInfoRequest request) {
-        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
-            return null;
-        }
+//        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
+//            return null;
+//        }
+        validateEmail(request);
+
+        userRepository.findByEmailIgnoreCase(request.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomException(String.format("User with email: %s already exists", request.getEmail()), HttpStatus.BAD_REQUEST);
+                });
         User user = mapper.convertValue(request, User.class);
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(UserStatus.CREATED);
         User save = userRepository.save(user);
         return mapper.convertValue(save, UserInfoResponse.class);
+    }
+    private void validateEmail(UserInfoRequest request) {
+        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
+            throw new CustomException("Invalid email format", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public UserInfoResponse getUser(Long id) {
@@ -45,13 +59,18 @@ public class UserService {
     }
 
     public User getUserFromDB(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
     }
 
     public UserInfoResponse updateUser(Long id, UserInfoRequest request) {
-        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
-            return null;
-        }
+//        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
+//            return null;
+//        }
+        validateEmail(request);
+        userRepository.findByEmailIgnoreCase(request.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomException(String.format("User with email: %s already exists", request.getEmail()), HttpStatus.BAD_REQUEST);
+                });
         User user = getUserFromDB(id);
 
         user.setEmail(request.getEmail());
@@ -96,8 +115,8 @@ public class UserService {
         return new PageImpl<>(content, pageRequest, all.getTotalElements());
     }
 
-    public void updateUserData(User user) {
-        userRepository.save(user);
+    public User updateUserData(User user) {
+        return userRepository.save(user);
     }
 
 

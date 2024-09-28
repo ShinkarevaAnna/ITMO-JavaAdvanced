@@ -26,7 +26,7 @@ public class CarController {
 
     @PostMapping
     @Operation(summary = "Create car")
-    public CarInfoResponse createCar(@RequestBody CarInfoRequest request) {
+    public CarInfoResponse createCar(@RequestBody @Valid CarInfoRequest request) {
         return carService.createCar(request);
     }
 

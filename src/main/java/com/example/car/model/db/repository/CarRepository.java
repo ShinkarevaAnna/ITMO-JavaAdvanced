@@ -38,12 +38,13 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     @Query("select c from Car c where c.status <> :status")
     Page<Car> findAllByStatusNot(Pageable request, CarStatus status);
 
-    @Query("select c from Car c where c.status <> :status and (lower(c.carMake) like %:filter%  or  lower(c.model) like %:filter% )")
+    @Query("select c from Car c where c.status <> :status and (upper(cast(c.color as string)) like %:filter% or" +
+            " upper(c.carMake) like %:filter%  or  upper(c.model) like %:filter% )")
     Page<Car> findAllByStatusNotFiltered(Pageable request, CarStatus status, @Param("filter") String filter);
 
     @Query("select c from Car c where c.user.id = :id and c.status <> :status")
     Page<Car> findAllCarsByStatusNot(Long id, Pageable request, CarStatus status);
 
-    @Query("select c from Car c where c.user.id = :id and c.status <> :status and (lower(c.carMake) like %:filter%  or  lower(c.model) like %:filter% )")
+    @Query("select c from Car c where c.user.id = :id and c.status <> :status and (upper(cast(c.color as string)) like %:filter% or upper(c.carMake) like %:filter%  or  upper(c.model) like %:filter% )")
     Page<Car> findAllCarsByStatusNotFiltered(Long id, Pageable request, CarStatus status, @Param("filter") String filter);
 }

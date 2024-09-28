@@ -2,6 +2,7 @@ package com.example.car.model.dto.request;
 
 import com.example.car.model.enums.CarMake;
 import com.example.car.model.enums.Color;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CarInfoRequest {
     @NotEmpty
     String model;
